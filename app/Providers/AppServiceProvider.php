@@ -2,23 +2,21 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Models\Attendee;
+use App\Models\Event;
+use App\Policies\AttendeePolicy;
+use App\Policies\EventPolicy;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    protected $policies = [
+        Event::class => EventPolicy::class,
+        Attendee::class => AttendeePolicy::class,
+    ];
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    public function boot()
     {
-        //
+        $this->registerPolicies();
     }
 }
