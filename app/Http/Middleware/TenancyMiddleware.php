@@ -2,25 +2,26 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Organization;
 use Closure;
+use App\Models\Organization;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class TenancyMiddleware
+class TenantMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $slug = $request->route('organization') ?? explode('.', $request->getHost())[0];
-        
-        if ($organization = Organization::where('slug', $slug)->first()) {
-            $request->merge(['organization' => $organization]);
-            $request->setUserResolver(function () use ($organization) {
-                return $organization;
-            });
-            
-            return $next($request);
+        $slug = $request->route('organization') ?? 
+               explode('.', $request->getHost())[0];
+
+        $organization = Organization::where('slug', $slug)->first();
+
+        if (!$organization) {
+            throw new NotFoundHttpException('Organization not found');
         }
 
-        abort(404, 'Organization not found');
+        app()->instance('currentOrganization', $organization);
+                
+        return $next($request);
     }
 }

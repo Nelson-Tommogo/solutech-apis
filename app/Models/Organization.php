@@ -12,13 +12,18 @@ class Organization extends Model
 
     protected $fillable = ['name', 'slug'];
 
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
 
-    public function users(): HasMany
+    public function activityLogs(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(ActivityLog::class);
     }
 }
